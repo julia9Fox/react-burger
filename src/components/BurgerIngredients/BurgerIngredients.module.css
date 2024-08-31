@@ -1,0 +1,19 @@
+.container_products{
+    overflow-y: auto;
+    max-height: calc(100vh - 336px);
+}
+.container_products > article:not(:first-of-type){
+    margin-top: 40px;
+}
+.card{
+    position: relative;
+    width: auto;
+    text-align: center;
+}
+.card img{
+    width: 240px;
+    height: 120px;
+}
+.card > p{
+    width: 240px; 
+}
