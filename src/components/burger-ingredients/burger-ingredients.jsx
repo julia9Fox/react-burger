@@ -4,8 +4,8 @@ import {
   Tab,
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import PropTypes from "prop-types";
-import React, { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import { useDispatch, useSelector , shallowEqual} from "react-redux";
 import { ProductItemType } from "../../utils/common-prop-types";
 import IngredientDetails from "../ingredient-details/ingredient-details";
 import Modal from "../modal/modal";
@@ -23,25 +23,42 @@ const tabs = ["bun", "sauce", "main"].map((type) => ({
   title: ingredientTypesMap[type],
 }));
 
-const ingredientsDataSelector = (state) => ({
-  ingredients: state.ingredients.data,
-  productDetails: state.ingredients.data.find(
-    (ingredient) => ingredient._id === state.details.ingredient
-  ),
-  countsMap: state.cart.ingredients.reduce((map, { id }) => {
-    map.set(id, (map.get(id) || 0) + 1);
+const ingredientsSelector = (state) => state.ingredients.data
+const productDetailsSelector = (state) => state.ingredients.data.find(
+  (ingredient) => ingredient._id === state.details.ingredient
+)
+const bunIngredientSelector = (state) => state.cart.bun
+const orderIngredientsSelector = (state) => state.cart.ingredients
 
-    return map;
-  }, new Map(state.cart.bun ? [[state.cart.bun, 2]] : [])),
-});
+// const ingredientsDataSelector = (state) => ({
+//   ingredients: state.ingredients.data,
+//   productDetails: state.ingredients.data.find(
+//     (ingredient) => ingredient._id === state.details.ingredient
+//   ),
+//   bunIngredient: state.cart.bun,
+//   orderIngredients: state.cart.ingredients
+// });
 
 export default function BurgerIngredients() {
   const [currentTab, setCurrentTab] = useState("bun");
   const [groupProducts, setGroupProducts] = useState([]);
   const [thresholds, setThreshholds] = useState({});
-  const { ingredients, productDetails, countsMap } = useSelector(
-    ingredientsDataSelector
-  );
+
+  const ingredients = useSelector(ingredientsSelector);
+  const productDetails = useSelector(productDetailsSelector);
+  const bunIngredient = useSelector(bunIngredientSelector);
+  const orderIngredients = useSelector(orderIngredientsSelector);
+
+  const countsMap = useMemo(() => {
+    const map = new Map(bunIngredient ? [[bunIngredient, 2]] : []);
+    
+    orderIngredients.forEach(({ id }) => {
+      map.set(id, (map.get(id) || 0) + 1)});
+
+    return map;
+  }, [orderIngredients, bunIngredient]);
+
+
   const scrollContainerRef = useRef();
   const dispatch = useDispatch();
 

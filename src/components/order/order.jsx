@@ -32,17 +32,19 @@ function totalPriceReducer(state, action) {
   }
 }
 
-const orderDataSelector = (state) => ({
-  ingredients: state.ingredients.data,
-  order: state.order.data?.number,
-  orderLoading: state.order.loading,
-  error: state.order.error,
-  orderOpen: state.order.open,
-});
+  const ingredientsSelector = state => state.ingredients.data
+  const orderSelector = state => state.order.data?.number
+  const orderLoadingSelector = state => state.order.loading
+  const errorSelector = state => state.order.error
+  const orderOpenSelector = state => state.order.open
 
 const OrderTotal = (props) => {
-  const { ingredients, order, orderLoading, error, orderOpen } =
-    useSelector(orderDataSelector);
+  const ingredients = useSelector(ingredientsSelector);
+  const order = useSelector(orderSelector);
+  const orderLoading = useSelector(orderLoadingSelector);
+  const error = useSelector(errorSelector);
+  const orderOpen = useSelector(orderOpenSelector);
+
   const ingredientsMap = useMemo(
     () =>
       new Map(ingredients.map((ingredient) => [ingredient._id, ingredient])),
