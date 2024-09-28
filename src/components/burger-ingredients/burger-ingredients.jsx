@@ -5,13 +5,12 @@ import {
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import PropTypes from "prop-types";
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import { useDispatch, useSelector , shallowEqual} from "react-redux";
-import { ProductItemType } from "../../utils/common-prop-types";
-import IngredientDetails from "../ingredient-details/ingredient-details";
-import Modal from "../modal/modal";
-import styles from "./burger-ingredients.module.css";
 import { useDrag } from "react-dnd";
-import { CLOSE_DETAILS, OPEN_DETAILS } from "../../services/actions/details";
+import { useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ProductItemType } from "../../utils/common-prop-types";
+import styles from "./burger-ingredients.module.css";
+import { INGREDIENT_ROUTE } from "../../const/routes";
 
 const ingredientTypesMap = {
   main: "Начинки",
@@ -23,29 +22,30 @@ const tabs = ["bun", "sauce", "main"].map((type) => ({
   title: ingredientTypesMap[type],
 }));
 
+// const ingredientsDataSelector = (state) => ({
+//   ingredients: state.ingredients.data,
+//   countsMap: state.cart.ingredients.reduce((map, { id }) => {
+//     map.set(id, (map.get(id) || 0) + 1);
+
+//     return map;
+//   }, new Map(state.cart.bun ? [[state.cart.bun, 2]] : [])),
+// });
 const ingredientsSelector = (state) => state.ingredients.data
-const productDetailsSelector = (state) => state.ingredients.data.find(
-  (ingredient) => ingredient._id === state.details.ingredient
-)
 const bunIngredientSelector = (state) => state.cart.bun
 const orderIngredientsSelector = (state) => state.cart.ingredients
 
-// const ingredientsDataSelector = (state) => ({
-//   ingredients: state.ingredients.data,
-//   productDetails: state.ingredients.data.find(
-//     (ingredient) => ingredient._id === state.details.ingredient
-//   ),
-//   bunIngredient: state.cart.bun,
-//   orderIngredients: state.cart.ingredients
-// });
 
 export default function BurgerIngredients() {
   const [currentTab, setCurrentTab] = useState("bun");
   const [groupProducts, setGroupProducts] = useState([]);
   const [thresholds, setThreshholds] = useState({});
+  // const { ingredients, countsMap } = useSelector(ingredientsDataSelector);
+  const scrollContainerRef = useRef();
+  const navigate = useNavigate();
+  let location = useLocation();
+
 
   const ingredients = useSelector(ingredientsSelector);
-  const productDetails = useSelector(productDetailsSelector);
   const bunIngredient = useSelector(bunIngredientSelector);
   const orderIngredients = useSelector(orderIngredientsSelector);
 
@@ -58,9 +58,6 @@ export default function BurgerIngredients() {
     return map;
   }, [orderIngredients, bunIngredient]);
 
-
-  const scrollContainerRef = useRef();
-  const dispatch = useDispatch();
 
   const categoriesRefs = {
     main: useRef(),
@@ -122,11 +119,9 @@ export default function BurgerIngredients() {
   }
 
   function onProductClick(ingredient) {
-    if (ingredient) {
-      dispatch(OPEN_DETAILS(ingredient._id));
-    } else {
-      dispatch(CLOSE_DETAILS());
-    }
+    navigate(`${INGREDIENT_ROUTE}/${ingredient._id}`, {
+      state: { backgroundLocation: location },
+    });
   }
 
   return (
@@ -151,11 +146,6 @@ export default function BurgerIngredients() {
           </div>
         ))}
       </div>
-      {productDetails && (
-        <Modal header="Детали ингредиента" onClose={() => onProductClick(null)}>
-          <IngredientDetails ingredient={productDetails} />
-        </Modal>
-      )}
     </div>
   );
 }
