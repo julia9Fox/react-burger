@@ -1,125 +1,207 @@
-import React, { useState, useEffect, useCallback } from "react";
-import PropTypes from "prop-types";
-import styles from "./burger-constructor.module.css";
 import {
-  Button,
   ConstructorElement,
-  CurrencyIcon,
   DragIcon,
 } from "@ya.praktikum/react-developer-burger-ui-components";
-import { ProductItemType, createOrder } from "../../utils/data";
-import OrderDetails from "../order-details/order-details";
-import Modal from "../modal/modal";
+import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
+import { useDrag, useDrop } from "react-dnd";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  APPEND_BUN_CART,
+  APPEND_INGREDIENT_CART,
+  REMOVE_CART,
+  SORT_CART,
+} from "../../services/actions/cart";
+import { ProductItemType } from "../../utils/common-prop-types";
+import Order from "../order/order";
+import styles from "./burger-constructor.module.css";
+import { nanoid } from "@reduxjs/toolkit";
 
-export default function BurgerConstructor(props) {
-  const [bunIngredient, setBunIngredient] = useState(null);
-  const [orderIngredients, setOrderIngredients] = useState([]);
-  const [orderOpen, setOrderOpen] = useState(false);
-  const [order, setOrder] = useState();
-  const [orderLoading, setOrderLoading] = useState(false);
+const ingredientsSelector = state => state.ingredients.data
+const bunIngredientSelector = state => state.cart.bun
+const orderIngredientsSelector = state => state.cart.ingredients
+
+export default function BurgerConstructor() {
+  const dispatch = useDispatch();
+
+  const ingredients = useSelector(ingredientsSelector)
+  const bunIngredient = useSelector(bunIngredientSelector)
+  const orderIngredients = useSelector(orderIngredientsSelector)
+
+
+  const [ingredientsMap, setIngredientsMap] = useState(new Map());
 
   useEffect(() => {
-    setBunIngredient(
-      props.ingredients?.find(({ type }) => type === "bun") || null
+    setIngredientsMap(
+      new Map(ingredients.map((ingredient) => [ingredient._id, ingredient]))
     );
-    setOrderIngredients(
-      props.ingredients?.filter(({ type }) => type !== "bun")
+  }, [ingredients]);
+
+  const onDropBun = (item) => {
+    dispatch(APPEND_BUN_CART(item._id));
+  };
+  const onDropIngredient = (item) => {
+    dispatch(
+      APPEND_INGREDIENT_CART({
+        id: item._id,
+        uuid: nanoid(),
+      })
     );
-  }, [props.ingredients]);
+  };
 
-  const onCompleteClick = useCallback(() => {
-    setOrderLoading(true);
-  });
+  const FirstBunItem = () => (
+    <BunItem
+      first={true}
+      ingredient={ingredientsMap.get(bunIngredient)}
+      onDrop={onDropBun}
+    />
+  );
+  const LastBunItem = () => (
+    <BunItem
+      first={false}
+      ingredient={ingredientsMap.get(bunIngredient)}
+      onDrop={onDropBun}
+    />
+  );
 
-  const onCompleteModalClose = useCallback(() => {
-    setOrderOpen(false);
-  });
+  const onDeleteItem = (uuid) => {
+    dispatch(REMOVE_CART(uuid));
+  };
+  const onSortItem = (prevUuid, newUuid) => {
+    if (prevUuid === newUuid) return;
 
-  useEffect(() => {
-    if (orderLoading) {
-      createOrder()
-        .then((order) => {
-          setOrder(order);
-          setOrderOpen(true);
+    dispatch(
+      SORT_CART({
+        prevUuid,
+        newUuid,
+      })
+    );
+  };
+
+  const ScrollItems = () => (
+    <DropTarget
+      accept="ingredient"
+      onDrop={onDropIngredient}
+      className={styles.scrollItems}
+    >
+      {orderIngredients.length ? (
+        orderIngredients.map(({ id, uuid }) => {
+          const ingredient = ingredientsMap.get(id);
+
+          return (
+            <React.Fragment key={uuid}>
+              <ProductItem
+                ingredient={ingredient}
+                uuid={uuid}
+                onDelete={() => onDeleteItem(uuid)}
+                onSortItem={(dropItem) => onSortItem(uuid, dropItem.uuid)}
+              />
+            </React.Fragment>
+          );
         })
-        .finally(() => {
-          setOrderLoading(false);
-        });
-    }
-  }, [orderLoading]);
+      ) : (
+        <div className={`${styles.itemEmpty}`}>
+          <div className={`${styles.emptyElement}`}>
+            <span className={styles.emptyElementText}>
+              Перенесите сюда ингредиент
+            </span>
+          </div>
+        </div>
+      )}
+    </DropTarget>
+  );
 
   return (
     <div className={styles.items}>
-      <BunItem first={true} ingredient={bunIngredient} />
-      <div className={styles.scrollItems}>
-        {orderIngredients.map((item) => (
-          <React.Fragment key={item._id}>
-            <ProductItem ingredient={item} />
-          </React.Fragment>
-        ))}
-      </div>
-      <BunItem first={false} ingredient={bunIngredient} />
-      <div className={styles.total}>
-        <p className="text text_type_digits-medium mr-2">610</p>
-        <div className={styles.totalIcon}>
-          <CurrencyIcon type="primary" />
-        </div>
-        <Button
-          htmlType="button"
-          type="primary"
-          size="large"
-          extraClass="ml-10"
-          onClick={onCompleteClick}
-        >
-          Оформить заказ
-        </Button>
-      </div>
-      {orderOpen && (
-        <Modal onClose={onCompleteModalClose}>
-          <OrderDetails order={order} />
-        </Modal>
-      )}
+      <FirstBunItem />
+      <ScrollItems />
+      <LastBunItem />
+      <Order bunItem={bunIngredient} orderIngredients={orderIngredients} />
     </div>
   );
 }
-BurgerConstructor.propTypes = {
-  ingredients: PropTypes.arrayOf(ProductItemType).isRequired,
-};
 
 function ProductItem(props) {
+  const [_, drag] = useDrag({
+    type: "order",
+    item: { uuid: props.uuid },
+  });
+
   return (
-    <div className={styles.item}>
-      <div className={styles.itemDrag}>
-        <DragIcon type="primary" />
+    <DropTarget onDrop={props.onSortItem} accept="order">
+      <div ref={drag} className={styles.item}>
+        <div className={styles.itemDrag}>
+          <DragIcon type="primary" />
+        </div>
+        <ConstructorElement
+          text={props.ingredient.name}
+          thumbnail={props.ingredient.image_mobile}
+          price={props.ingredient.price}
+          handleClose={props.onDelete}
+        />
       </div>
-      <ConstructorElement
-        text={props.ingredient.name}
-        thumbnail={props.ingredient.image_mobile}
-        price={props.ingredient.price}
-      />
-    </div>
+    </DropTarget>
   );
 }
 ProductItem.propTypes = {
   ingredient: ProductItemType.isRequired,
+  uuid: PropTypes.string.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onSortItem: PropTypes.func.isRequired,
 };
 
 function BunItem(props) {
   const text = `${props.ingredient?.name} (${props.first ? "верх" : "низ"})`;
 
-  return props.ingredient ? (
-    <div className={styles.bunItem}>
-      <ConstructorElement
-        text={text}
-        thumbnail={props.ingredient.image_mobile}
-        price={props.ingredient.price}
-        isLocked={true}
-        type={props.first ? "top" : "bottom"}
-      />
-    </div>
-  ) : null;
+  return (
+    <DropTarget onDrop={props.onDrop} accept="bun">
+      {props.ingredient ? (
+        <div className={styles.bunItem}>
+          <ConstructorElement
+            text={text}
+            thumbnail={props.ingredient.image_mobile}
+            price={props.ingredient.price}
+            isLocked={true}
+            type={props.first ? "top" : "bottom"}
+          />
+        </div>
+      ) : (
+        <div className={styles.bunItem}>
+          <div
+            className={`${styles.bunEmptyElement} ${
+              props.first
+                ? "constructor-element_pos_top"
+                : "constructor-element_pos_bottom"
+            }`}
+          >
+            <span className={styles.emptyElementText}>
+              Перенесите сюда булку
+            </span>
+          </div>
+        </div>
+      )}
+    </DropTarget>
+  );
 }
 BunItem.propTypes = {
   first: PropTypes.bool.isRequired,
   ingredient: ProductItemType,
 };
+
+function DropTarget({ children, onDrop, accept, className }) {
+  const [{ isHover }, dropTarget] = useDrop({
+    accept,
+    drop(item) {
+      onDrop(item);
+    },
+    collect: (monitor) => ({
+      isHover: monitor.isOver(),
+    }),
+  });
+
+  return (
+    <div className={className} ref={dropTarget}>
+      {children}
+    </div>
+  );
+}
