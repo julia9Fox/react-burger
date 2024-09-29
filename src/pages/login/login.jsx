@@ -40,7 +40,6 @@ export function LoginPage() {
   const onSubmit = (e) => {
     e.preventDefault();
     dispatch(login({ email, password }));
-    navigate('/', { replace: true });
   };
 
   useEffect(() => {
