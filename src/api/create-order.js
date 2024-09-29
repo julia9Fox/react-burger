@@ -1,10 +1,14 @@
 import request from "../utils/request";
+import { getCookie } from "../utils/cookie";
+
+export const ACCESS_TOKEN_COOKIE = "accessToken";
 
 export default function createOrder(orderListIds) {
   return request("/orders", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      authorization: getCookie(ACCESS_TOKEN_COOKIE),
     },
     body: JSON.stringify({
       ingredients: orderListIds,
