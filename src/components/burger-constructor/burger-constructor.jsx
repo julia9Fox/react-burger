@@ -17,17 +17,25 @@ import Order from "../order/order";
 import styles from "./burger-constructor.module.css";
 import { nanoid } from "@reduxjs/toolkit";
 
+// const constructorDataSelector = (state) => ({
+//   ingredients: state.ingredients.data,
+//   bunIngredient: state.cart.bun,
+//   orderIngredients: state.cart.ingredients,
+// });
 const ingredientsSelector = state => state.ingredients.data
 const bunIngredientSelector = state => state.cart.bun
 const orderIngredientsSelector = state => state.cart.ingredients
 
+
 export default function BurgerConstructor() {
   const dispatch = useDispatch();
-
+  // const { ingredients, bunIngredient, orderIngredients } = useSelector(
+  //   constructorDataSelector
+  // );
+  
   const ingredients = useSelector(ingredientsSelector)
   const bunIngredient = useSelector(bunIngredientSelector)
   const orderIngredients = useSelector(orderIngredientsSelector)
-
 
   const [ingredientsMap, setIngredientsMap] = useState(new Map());
 
@@ -88,6 +96,8 @@ export default function BurgerConstructor() {
         orderIngredients.map(({ id, uuid }) => {
           const ingredient = ingredientsMap.get(id);
 
+          if (!ingredient) return;
+
           return (
             <React.Fragment key={uuid}>
               <ProductItem
@@ -122,7 +132,7 @@ export default function BurgerConstructor() {
 }
 
 function ProductItem(props) {
-  const [_, drag] = useDrag({
+  const [, drag] = useDrag({
     type: "order",
     item: { uuid: props.uuid },
   });
@@ -198,6 +208,10 @@ function DropTarget({ children, onDrop, accept, className }) {
       isHover: monitor.isOver(),
     }),
   });
+
+  className = [className, isHover && styles.emptyElementHover]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <div className={className} ref={dropTarget}>
