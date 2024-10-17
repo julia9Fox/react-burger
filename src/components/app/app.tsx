@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 
 import { Route, Routes, useLocation } from "react-router-dom";
 import { BurgerIngredientModal } from "../../pages/burger-ingredient/burger-ingredient-modal";
@@ -16,6 +16,7 @@ import { AppHeader } from "../app-header/app-header";
 import ErrorBoundary from "../error-boundary/error-boundary";
 import { ProtectedRouteElement } from "../protected/protected-route-element";
 import styles from "./app.module.css";
+import { useAppSelector } from "../../hooks/store";
 import {
   FORGOT_PASSWORD_ROUTE,
   HOME_ROUTE,
@@ -28,13 +29,11 @@ import {
   RESET_PASSWORD_ROUTE,
 } from "../../const/routes";
 import BurgerIngredientPage from "../../pages/burger-ingredient/burger-ingredient-page";
-import { IState } from "../../models";
+// import { IState } from "../../models";
 import { FC } from "react";
 
 export const App: FC = () => {
-  const overlayError = useSelector<IState, IState["error"]["overlayError"]>(
-    (state) => state.error.overlayError
-  );
+  const overlayError = useAppSelector((state) => state.error.overlayError);
   const location = useLocation();
 
   return (

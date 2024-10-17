@@ -1,6 +1,7 @@
 import { Button } from "@ya.praktikum/react-developer-burger-ui-components";
 import { FC, FormEvent, useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+// import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormFieldEmail } from "../../components/form-fields/email/email";
 import { useFormFieldPassword } from "../../components/form-fields/password/password";
@@ -8,16 +9,13 @@ import { useFormFieldText } from "../../components/form-fields/text/text";
 import styles from "./register.module.css";
 import { register } from "../../services/actions/profile";
 import { HOME_ROUTE, LOGIN_ROUTE } from "../../const/routes";
-import { TDispatch, IState } from "../../models";
+// import { TDispatch, IState } from "../../models";
 
 export const RegisterPage: FC = () => {
   const [formValid, setFormValid] = useState(false);
-  const dispatch = useDispatch<TDispatch>();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { isRegister, error, loading } = useSelector<
-    IState,
-    { isRegister: boolean; error: string | null; loading: boolean }
-  >((state) => ({
+  const { isRegister, error, loading } = useAppSelector((state) => ({
     isRegister: !!state.profile.name,
     error: state.profile.request.error,
     loading: state.profile.request.loading,
