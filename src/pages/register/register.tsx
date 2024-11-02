@@ -1,15 +1,13 @@
 import { Button } from "@ya.praktikum/react-developer-burger-ui-components";
 import { FC, FormEvent, useCallback, useEffect, useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormFieldEmail } from "../../components/form-fields/email/email";
 import { useFormFieldPassword } from "../../components/form-fields/password/password";
 import { useFormFieldText } from "../../components/form-fields/text/text";
-import styles from "./register.module.css";
-import { register } from "../../services/actions/profile";
 import { HOME_ROUTE, LOGIN_ROUTE } from "../../const/routes";
-// import { TDispatch, IState } from "../../models";
+import { useAppDispatch, useAppSelector } from "../../hooks/store";
+import { register } from "../../services/actions/profile";
+import styles from "./register.module.css";
 
 export const RegisterPage: FC = () => {
   const [formValid, setFormValid] = useState(false);

@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { useParams } from "react-router-dom";
 import { IngredientDetails } from "../../components/ingredient-details/ingredient-details";
+import { useAppDispatch, useAppSelector } from "../../hooks/store";
 import { IIngredient } from "../../models/ingredient";
-// import { TDispatch } from "../../models";
 import { getIngredients } from "../../services/actions/ingredients";
 import styles from "./burger-ingredient-page.module.css";
 

@@ -1,11 +1,8 @@
-// import { ThunkDispatch } from "@reduxjs/toolkit";
 import { FC, useEffect, useRef, useState } from "react";
-// import { useDispatch } from "react-redux";
-import { useAppDispatch } from "../../hooks/store";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { IGetUserResponse } from "../../api/auth";
 import { LOGIN_ROUTE } from "../../const/routes";
-// import { IState } from "../../models";
+import { useAppDispatch } from "../../hooks/store";
 import { getUser } from "../../services/actions/profile";
 
 interface ProtectedRouteElementProps {
@@ -54,6 +51,10 @@ export const ProtectedRouteElement: FC<ProtectedRouteElementProps> = ({
   return user || authRestricted ? (
     element
   ) : (
-    <Navigate to={LOGIN_ROUTE} state={{ protectedFrom: pathname }} />
+    <Navigate
+      to={LOGIN_ROUTE}
+      state={{ protectedFrom: pathname }}
+      replace={true}
+    />
   );
 };
