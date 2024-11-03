@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { useEffect, useState, FC } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import {
   FEED_ITEM_ROUTE,
@@ -34,10 +34,17 @@ import { AppHeader } from "../app-header/app-header";
 import ErrorBoundary from "../error-boundary/error-boundary";
 import { ProtectedRouteElement } from "../protected/protected-route-element";
 import styles from "./app.module.css";
+import { getIngredients } from "../../services/actions/ingredients";
+import { useAppDispatch } from "../../hooks/store";
 
 export const App: FC = () => {
   const overlayError = useAppSelector((state) => state.error.overlayError);
   const location = useLocation();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(getIngredients());
+  }, [dispatch]);
 
   return (
     <ErrorBoundary error={overlayError}>

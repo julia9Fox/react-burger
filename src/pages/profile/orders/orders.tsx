@@ -8,6 +8,7 @@ import {
   getProfileOrders,
 } from "../../../services/actions/orders";
 import styles from "./orders.module.css";
+import { useAppSelector } from "../../../hooks/store";
 
 export const ProfileOrdersPage: FC = () => {
   const navigate = useNavigate();
@@ -19,18 +20,25 @@ export const ProfileOrdersPage: FC = () => {
       state: { backgroundLocation: location },
     });
   };
+  const { orders } = useAppSelector(state => ({ orders: state.orders.orders}));
 
   useEffect(() => {
-    dispatch(getProfileOrders());
+    dispatch(getProfileOrders());    
 
     return () => {
-      dispatch({ type: ORDERS_CONNECTION_CLOSED });
+      // dispatch({ type: ORDERS_CONNECTION_CLOSED });
+      setTimeout(()=>dispatch({ type: ORDERS_CONNECTION_CLOSED }), 1000)
     };
   }, []);
 
   return (
     <div className={styles.container}>
-      <OrderList onClick={onOrderClick} />
+
+      {orders ? (
+          <OrderList onClick={onOrderClick} />
+        ) : (
+          <p className="text text_type_main-medium">Загрузка...</p>
+        )}
     </div>
   );
 };

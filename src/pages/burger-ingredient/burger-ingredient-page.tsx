@@ -14,9 +14,9 @@ export default function BurgerIngredientPage() {
   );
   const [product, setProduct] = useState<IIngredient>();
 
-  useEffect(() => {
-    dispatch(getIngredients());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(getIngredients());
+  // }, [dispatch]);
 
   useEffect(() => {
     setProduct(ingredients?.find(({ _id }) => _id === productId));

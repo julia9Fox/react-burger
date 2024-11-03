@@ -55,9 +55,9 @@ export const getProfileOrders = (): AppThunk => (dispatch, getState) => {
   const { ingredients } = getState();
   const token = getCookie(ACCESS_TOKEN_COOKIE)?.replace("Bearer ", "");
 
-  if (ingredients.data.length === 0 && !ingredients.loading) {
-    dispatch(getIngredients());
-  }
+  // if (ingredients.data.length === 0 && !ingredients.loading) {
+  //   dispatch(getIngredients());
+  // }
 
   dispatch({
     type: ORDERS_CONNECTION_START,
@@ -65,12 +65,7 @@ export const getProfileOrders = (): AppThunk => (dispatch, getState) => {
   });
 };
 
-export const getAllOrders = (): AppThunk => (dispatch, getState) => {
-  const { ingredients } = getState();
-
-  if (ingredients.data.length === 0 && !ingredients.loading) {
-    dispatch(getIngredients());
-  }
+export const getAllOrders = (): AppThunk => (dispatch) => {
 
   dispatch({ type: ORDERS_CONNECTION_START, payload: "orders/all" });
 };

@@ -10,9 +10,9 @@ import styles from "./home.module.css";
 export const HomePage: FC = () => {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    dispatch(getIngredients());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(getIngredients());
+  // }, [dispatch]);
 
   return (
     <DndProvider backend={HTML5Backend}>

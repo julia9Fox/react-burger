@@ -82,7 +82,7 @@ export const OrderDetails: FC<IOrderDetailsProps> = (props) => {
     );
   }, [allIngredients, order]);
 
-  useEffect(() => {
+  useEffect(() => {    
     if (!ordersLoaded) {
       dispatch(props.fromAllOrders ? getAllOrders() : getProfileOrders());
       setLoading(true);
