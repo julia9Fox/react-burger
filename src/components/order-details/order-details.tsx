@@ -88,7 +88,7 @@ export const OrderDetails: FC<IOrderDetailsProps> = (props) => {
       setLoading(true);
 
       return () => {
-        dispatch({ type: ORDERS_CONNECTION_CLOSED });
+        setTimeout(()=>dispatch({ type: ORDERS_CONNECTION_CLOSED }), 1000)
       };
     }
   }, []);

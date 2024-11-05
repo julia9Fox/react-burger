@@ -14,7 +14,6 @@ export const ProfileOrdersPage: FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
-
   const onOrderClick = (id: string) => {
     navigate(`${PROFILE_ORDERS_ROUTE}/${id}`, {
       state: { backgroundLocation: location },
