@@ -1,10 +1,8 @@
 import { FC, useEffect } from "react";
-// import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { LOGIN_ROUTE } from "../../../const/routes";
-// import { IState, TDispatch } from "../../../models";
-import { logout } from "../../../services/actions/profile";
 import { useAppDispatch, useAppSelector } from "../../../hooks/store";
+import { logout } from "../../../services/actions/profile";
 import styles from "./details.module.css";
 
 export const LogoutPage: FC = () => {
@@ -26,5 +24,9 @@ export const LogoutPage: FC = () => {
     }
   }, [isLogout, navigate]);
 
-  return loading ? <>Выход...</> : <p className={styles.error}>{error}</p>;
+  return (
+    <div className="mt-30">
+      {loading ? <>Выход...</> : <p className={styles.error}>{error}</p>}
+    </div>
+  );
 };

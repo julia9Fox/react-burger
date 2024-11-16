@@ -1,11 +1,29 @@
-// import { useSelector } from "react-redux";
-
+import { useEffect, useState, FC } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
+import {
+  FEED_ITEM_ROUTE,
+  FEED_ROUTE,
+  FORGOT_PASSWORD_ROUTE,
+  HOME_ROUTE,
+  INGREDIENT_ITEM_ROUTE,
+  LOGIN_ROUTE,
+  PROFILE_LOGOUT_ROUTE,
+  PROFILE_ORDERS_ITEM_ROUTE,
+  PROFILE_ORDERS_ROUTE,
+  PROFILE_ROUTE,
+  REGISTER_ROUTE,
+  RESET_PASSWORD_ROUTE,
+} from "../../const/routes";
+import { useAppSelector } from "../../hooks/store";
 import { BurgerIngredientModal } from "../../pages/burger-ingredient/burger-ingredient-modal";
+import BurgerIngredientPage from "../../pages/burger-ingredient/burger-ingredient-page";
+import { FeedPage } from "../../pages/feed/feed";
 import { ForgotPasswordPage } from "../../pages/forgot-password/forgot-password";
 import { HomePage } from "../../pages/home/home";
 import { LoginPage } from "../../pages/login/login";
 import { NotFoundPage } from "../../pages/not-found/not-found";
+import { OrderDetailsPage } from "../../pages/order-details/order-details";
+import { OrderDetailsModal } from "../../pages/order-details/order-details-modal";
 import { ProfileDetailsPage } from "../../pages/profile/details/details";
 import { LogoutPage } from "../../pages/profile/logout/details";
 import { ProfileOrdersPage } from "../../pages/profile/orders/orders";
@@ -16,25 +34,17 @@ import { AppHeader } from "../app-header/app-header";
 import ErrorBoundary from "../error-boundary/error-boundary";
 import { ProtectedRouteElement } from "../protected/protected-route-element";
 import styles from "./app.module.css";
-import { useAppSelector } from "../../hooks/store";
-import {
-  FORGOT_PASSWORD_ROUTE,
-  HOME_ROUTE,
-  INGREDIENT_ROUTE,
-  LOGIN_ROUTE,
-  PROFILE_LOGOUT_ROUTE,
-  PROFILE_ORDERS_ROUTE,
-  PROFILE_ROUTE,
-  REGISTER_ROUTE,
-  RESET_PASSWORD_ROUTE,
-} from "../../const/routes";
-import BurgerIngredientPage from "../../pages/burger-ingredient/burger-ingredient-page";
-// import { IState } from "../../models";
-import { FC } from "react";
+import { getIngredients } from "../../services/actions/ingredients";
+import { useAppDispatch } from "../../hooks/store";
 
 export const App: FC = () => {
   const overlayError = useAppSelector((state) => state.error.overlayError);
   const location = useLocation();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(getIngredients());
+  }, [dispatch]);
 
   return (
     <ErrorBoundary error={overlayError}>
@@ -81,19 +91,46 @@ export const App: FC = () => {
             />
             <Route path={PROFILE_LOGOUT_ROUTE} element={<LogoutPage />} />
           </Route>
+          <Route path={FEED_ROUTE} element={<FeedPage />} />
           {!location.state?.backgroundLocation && (
-            <Route
-              path={INGREDIENT_ROUTE + "/:productId"}
-              element={<BurgerIngredientPage />}
-            />
+            <>
+              <Route
+                path={INGREDIENT_ITEM_ROUTE}
+                element={<BurgerIngredientPage />}
+              />
+              <Route
+                path={PROFILE_ORDERS_ITEM_ROUTE}
+                element={
+                  <ProtectedRouteElement
+                    element={<OrderDetailsPage fromAllOrders={false} />}
+                  />
+                }
+              />
+              <Route
+                path={FEED_ITEM_ROUTE}
+                element={<OrderDetailsPage fromAllOrders={true} />}
+              />
+            </>
           )}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
         {location.state?.backgroundLocation && (
           <Routes>
             <Route
-              path={INGREDIENT_ROUTE + "/:productId"}
+              path={INGREDIENT_ITEM_ROUTE}
               element={<BurgerIngredientModal />}
+            />
+            <Route
+              path={PROFILE_ORDERS_ITEM_ROUTE}
+              element={
+                <ProtectedRouteElement
+                  element={<OrderDetailsModal fromAllOrders={false} />}
+                />
+              }
+            />
+            <Route
+              path={FEED_ITEM_ROUTE}
+              element={<OrderDetailsModal fromAllOrders={true} />}
             />
           </Routes>
         )}

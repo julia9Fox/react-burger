@@ -1,9 +1,8 @@
 import { FC, useCallback, useEffect, useState } from "react";
-// import { useSelector } from "react-redux";
-import { useAppSelector } from "../../hooks/store";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { IngredientDetails } from "../../components/ingredient-details/ingredient-details";
 import { Modal } from "../../components/modal/modal";
+import { useAppSelector } from "../../hooks/store";
 import { IIngredient } from "../../models";
 
 export const BurgerIngredientModal: FC = () => {

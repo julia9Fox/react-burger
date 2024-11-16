@@ -11,10 +11,9 @@ import React, {
   useState,
 } from "react";
 import { useDrag } from "react-dnd";
-// import { useSelector } from "react-redux";
-import { useAppSelector } from "../../hooks/store";
 import { useLocation, useNavigate } from "react-router-dom";
 import { INGREDIENT_ROUTE } from "../../const/routes";
+import { useAppSelector } from "../../hooks/store";
 import { IIngredient, IState, TIngredientType } from "../../models";
 import styles from "./burger-ingredients.module.css";
 
@@ -225,7 +224,7 @@ interface ITabsProps {
   currentTab: TIngredientType;
 }
 
-const Tabs: FC<ITabsProps> = (props:any) => {
+const Tabs: FC<ITabsProps> = (props) => {
   return (
     <div className={styles.tabs}>
       {tabs.map(({ type, title }) => (

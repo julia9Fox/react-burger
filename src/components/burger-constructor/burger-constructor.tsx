@@ -4,7 +4,6 @@ import {
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import React, { useEffect, useState, FC } from "react";
 import { useDrag, useDrop } from "react-dnd";
-// import { useDispatch, useSelector } from "react-redux";
 import {
   APPEND_BUN_CART,
   APPEND_INGREDIENT_CART,
@@ -33,12 +32,14 @@ const constructorDataSelector = (state: IState): IDataFromState => ({
 
 export const BurgerConstructor: FC = () => {
   const dispatch = useAppDispatch();
-  const { ingredients, bunIngredient, orderIngredients } = useAppSelector(constructorDataSelector);
+  const { ingredients, bunIngredient, orderIngredients } = useAppSelector(
+    constructorDataSelector
+  );
   const [ingredientsMap, setIngredientsMap] = useState(new Map());
 
   useEffect(() => {
     setIngredientsMap(
-      new Map(ingredients.map((ingredient:any) => [ingredient._id, ingredient]))
+      new Map(ingredients.map((ingredient) => [ingredient._id, ingredient]))
     );
   }, [ingredients]);
 
@@ -101,7 +102,7 @@ export const BurgerConstructor: FC = () => {
                 ingredient={ingredient}
                 uuid={uuid}
                 onDelete={() => onDeleteItem(uuid)}
-                onSortItem={(dropItem:any) => onSortItem(uuid, dropItem.uuid)}
+                onSortItem={(dropItem) => onSortItem(uuid, dropItem.uuid)}
               />
             </React.Fragment>
           );

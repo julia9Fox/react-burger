@@ -1,20 +1,18 @@
+import { FC, useEffect } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-// import { useDispatch } from "react-redux";
-import { useAppDispatch } from "../../hooks/store";
 import { BurgerConstructor } from "../../components/burger-constructor/burger-constructor";
 import { BurgerIngredients } from "../../components/burger-ingredients/burger-ingredients";
-import styles from "./home.module.css";
-import { FC, useEffect } from "react";
+import { useAppDispatch } from "../../hooks/store";
 import { getIngredients } from "../../services/actions/ingredients";
-// import { TDispatch } from "../../models";
+import styles from "./home.module.css";
 
 export const HomePage: FC = () => {
   const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    dispatch(getIngredients());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(getIngredients());
+  // }, [dispatch]);
 
   return (
     <DndProvider backend={HTML5Backend}>
