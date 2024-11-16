@@ -12,7 +12,6 @@ import { TOrderStatus } from "../../models";
 import { ERROR } from "../../services/actions/error";
 import {
   ORDERS_CONNECTION_CLOSED,
-  ORDERS_CONNECTION_START,
   getAllOrders,
 } from "../../services/actions/orders";
 import styles from "./feed.module.css";
