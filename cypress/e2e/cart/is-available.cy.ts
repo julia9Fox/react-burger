@@ -1,10 +1,11 @@
+const BASE_URL = 'https://norma.nomoreparties.space/api/'
 describe("service is available", () => {
   beforeEach(() => {
-    cy.intercept("GET", "https://norma.nomoreparties.space/api/ingredients", {
+    cy.intercept("GET", `${BASE_URL}ingredients`, {
       fixture: "ingredients",
     }).as("ingredients");
 
-    cy.visit("http://localhost:3000");
+    cy.visit("");
   });
 
   it("create order flow", () => {
@@ -144,7 +145,7 @@ describe("service is available", () => {
     );
     cy.get("[class^=login_container__] button[type=submit]").click();
 
-    cy.intercept("POST", "https://norma.nomoreparties.space/api/auth/login", {
+    cy.intercept("POST", `${BASE_URL}auth/login`, {
       fixture: "login",
     }).as("login");
 
@@ -158,7 +159,7 @@ describe("service is available", () => {
     cy.log("Create order");
 
     cy.fixture("create-order").then((createOrderData) => {
-      cy.intercept("POST", "https://norma.nomoreparties.space/api/orders", {
+      cy.intercept("POST", `${BASE_URL}orders`, {
         delay: 1000,
         statusCode: 200,
         body: createOrderData,
